@@ -7,6 +7,7 @@ CMD_LEFT = 97
 CMD_RIGHT = 100
 CMD_STOP = 32
 
+
 class Motors_dc2platform:
     def __init__(self, i2c_bus: SMBus, address: int):
         self.bus = i2c_bus
@@ -41,4 +42,5 @@ class Motors_dc2platform:
         cmd = CMD_STOP
         self.bus.write_byte(self.addr, CMD_STOP)
         print("%s - Sent %x to %x" % (self.__get_time(),cmd,self.addr))
+
 
