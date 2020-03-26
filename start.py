@@ -11,10 +11,12 @@ from multiprocessing import Process
 # objects and constants
 MOTORS_ADDR = 0x2a # bus address
 EYE_ADDR = 0x2b
+EYE_TRIGGER = 0x150
 bus = SMBus(1) # indicates /dev/ic2-1
 motors = Motors_dc2platform(bus, MOTORS_ADDR)
 eye = Eye(bus, EYE_ADDR)
 eye_data = 0
+trigger = [False]
 
 
 def random_walk():
@@ -58,9 +60,23 @@ def demo():
 def eye_poll():
     while(1):
         global eye_data
+        global trigger
         eye_data = eye.Read()
-        sleep(.5)
-        print(hex(eye_data))
+        if (eye_data < EYE_TRIGGER):
+            trigger[0] = True
+        else:
+            trigger[0] = False
+        sleep(.1)
+        print(hex(eye_data)+ " | triggered = " + str(trigger[0]))
+
+# def trigger():
+#     while True:
+#         if (eye_data > 0x300):
+#             break
+
+def freeze():
+    while 1:
+        motors.Stop()
 
 # -----------------------------------------------------------------------------
 if __name__ == "__main__":
@@ -70,11 +86,6 @@ if __name__ == "__main__":
     #     random_walk()
     motors.Stop()
     input("press enter to start")
-    c = Conscious(1, "test", random_walk)
-    s = Subconscious(1, "test2", eye_poll)
-
-    # c = Process(target=random_walk, daemon=True)
-    # s = Process(target=eye_poll, daemon=True)
-
-    c.start()
-    s.start()
+    m = Mind(1, "Robot's Mind", random_walk, eye_poll, freeze, trigger)
+    # eye_poll()
+    m.start()
