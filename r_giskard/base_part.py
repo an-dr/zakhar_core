@@ -10,7 +10,7 @@ class BasePart (threading.Thread):
         self.main_function = function
 
     def run(self):
-        print("Starting " + self.name)
+        print("Starting " + self.name )
         try:
             self.main_function()
         finally:

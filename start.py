@@ -11,7 +11,7 @@ from multiprocessing import Process
 # objects and constants
 MOTORS_ADDR = 0x2a # bus address
 EYE_ADDR = 0x2b
-EYE_TRIGGER = 0x150
+EYE_TRIGGER = 0x300
 bus = SMBus(1) # indicates /dev/ic2-1
 motors = Motors_dc2platform(bus, MOTORS_ADDR)
 eye = Eye(bus, EYE_ADDR)
@@ -78,14 +78,25 @@ def freeze():
     while 1:
         motors.Stop()
 
+def shiver():
+    while 1:
+        motors.MoveLeft()
+        sleep(0.05)
+        motors.MoveRight()
+        sleep(0.05)
+
+def start_mind():
+    m = Mind(1, "Robot's Mind", shiver, eye_poll, freeze, trigger)
+    m.start()
+
+def reset():
+    motors.Stop()
+
 # -----------------------------------------------------------------------------
 if __name__ == "__main__":
-    # oled_init()
-    # # demo()
-    # for i in range(5):
-    #     random_walk()
-    motors.Stop()
+    oled_init()
+    reset()
     input("press enter to start")
-    m = Mind(1, "Robot's Mind", random_walk, eye_poll, freeze, trigger)
+    start_mind()
+    # shiver()
     # eye_poll()
-    m.start()
