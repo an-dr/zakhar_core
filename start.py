@@ -1,7 +1,7 @@
-from smbus import SMBus
+from i2c import *
 from time import sleep
 from motors import *
-from oled import oled_init
+from oled import *
 from eye import Eye
 from r_giskard import *
 from multiprocessing import Process
@@ -12,7 +12,9 @@ from multiprocessing import Process
 MOTORS_ADDR = 0x2a # bus address
 EYE_ADDR = 0x2b
 EYE_TRIGGER = 0x170
-bus = SMBus(1) # indicates /dev/ic2-1
+
+i2c_bus = SMBus(1) # indicates /dev/ic2-1
+eye_i2c = ZakharI2cDevice(i2c_bus, EYE_ADDR)
 motors = Motors_dc2platform(bus, MOTORS_ADDR)
 eye = Eye(bus, EYE_ADDR)
 eye_data = 0
@@ -69,6 +71,22 @@ def eye_poll():
         sleep(.1)
         print(hex(eye_data)+ " | triggered = " + str(trigger[0]))
 
+def eye_poll2():
+    while(1):
+        global eye_data
+        global trigger
+        global eye_i2c
+        eye_data_hi = eye_i2c.read_byte_from(0)
+        eye_data_lo = eye_i2c.read_byte_from(1)
+        eye_data = eye_data_hi << 8 | eye_data_lo
+        if eye_data is not 0:
+            if (eye_data < EYE_TRIGGER):
+                trigger[0] = True
+            else:
+                trigger[0] = False
+            sleep(.1)
+            print(hex(eye_data)+ " | triggered = " + str(trigger[0]))
+
 # def trigger():
 #     while True:
 #         if (eye_data > 0x300):
@@ -110,14 +128,14 @@ def send_i2c():
 def i2c_read_32bit(addr, reg):
     vals = bus.read_i2c_block_data(addr,reg,4)
     uint32val = (vals[3]<<24) | (vals[2]<<816) | (vals[1]<<8) | vals[0]
-    print(uint32val)
+    print(hex(uint32val))
     return uint32val
 
 def read_i2c():
     while True:
         try:
-            # i2c_read_32bit(EYE_ADDR,0)
-            i2c_read_32bit(EYE_ADDR,1)
+            i2c_read_32bit(EYE_ADDR,0)
+            # i2c_read_32bit(EYE_ADDR,1)
             # v = bus.read_byte_data()
             # print("Read " + str(bus.read_byte(EYE_ADDR)))
             # print("Read " + str(bus.read_byte_data(EYE_ADDR,2)))
@@ -132,10 +150,18 @@ def read_i2c():
 
 # -----------------------------------------------------------------------------
 if __name__ == "__main__":
-    oled_init()
-    reset()
+    # oled_init()
+    # oled_night()
+    oled_license()
+    # reset()
     # input("press enter to start")
-    # start_mind()
-    # shiver()
-    # eye_poll()
-    read_i2c()
+
+    # i2c_write_bytes_to(EYE_ADDR, 0, [0]*8)
+    # i2c_write_bytes_to(EYE_ADDR, 2, [0xa2,0xa3,0xa4,0xa5, 0xa6, 0xa7])
+    # print(i2c_read_bytes_from(EYE_ADDR,0,8))
+
+
+    # content = eye.read_bytes_from(0, 12)
+    # print(content)
+
+    eye_poll2()
