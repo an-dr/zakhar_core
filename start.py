@@ -8,7 +8,8 @@ if __name__ == "__main__":
     # oled_init()
     # oled_night()
     oled_license()
-    # reset()
+    # shiver()
+    reset()
     # input("press enter to start")
 
     # i2c_write_bytes_to(EYE_ADDR, 0, [0]*8)
@@ -16,7 +17,7 @@ if __name__ == "__main__":
     # print(i2c_read_bytes_from(EYE_ADDR,0,8))
 
 
-    # content = eye.read_bytes_from(0, 12)
+    # content = eye_i2c.read_bytes_from(0, 12)
     # print(content)
 
     eye_poll2()
