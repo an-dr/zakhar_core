@@ -6,6 +6,9 @@ authors = ["Andrei Gramakov <mail@agramakov.me>"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
+click = "^7.1.1"
+smbus2 = "^0.3.0"
+Adafruit_SSD1306 = {version = "^1.6.2", platform = "UNIX"}
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

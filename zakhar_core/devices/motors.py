@@ -1,12 +1,8 @@
-from smbus import SMBus
+from . import *
 from datetime import datetime
+from ..i2c import *
 
-CMD_FORWARD = 119
-CMD_BACKWARD = 115
-CMD_LEFT = 97
-CMD_RIGHT = 100
-CMD_STOP = 32
-
+motors = Motors_dc2platform(bus, MOTORS_ADDR)
 
 class Motors_dc2platform:
     def __init__(self, i2c_bus: SMBus, address: int):
