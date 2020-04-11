@@ -2,7 +2,6 @@ from . import *
 from datetime import datetime
 from ..i2c import *
 
-motors = Motors_dc2platform(bus, MOTORS_ADDR)
 
 class Motors_dc2platform:
     def __init__(self, i2c_bus: SMBus, address: int):
@@ -40,3 +39,4 @@ class Motors_dc2platform:
         print("%s - Sent %x to %x" % (self.__get_time(),cmd,self.addr))
 
 
+motors = Motors_dc2platform(bus, MOTORS_ADDR)

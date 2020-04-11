@@ -8,7 +8,10 @@ authors = ["Andrei Gramakov <mail@agramakov.me>"]
 python = "^3.7"
 click = "^7.1.1"
 smbus2 = "^0.3.0"
-Adafruit_SSD1306 = {version = "^1.6.2", platform = "UNIX"}
+Adafruit_GPIO = "^1.0.3"
+Adafruit_SSD1306 = "^1.6.2"
+pillow = "^7.1.1"
+"RPi.GPIO" = "^0.7.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

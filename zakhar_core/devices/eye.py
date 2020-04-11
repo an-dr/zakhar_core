@@ -1,14 +1,15 @@
 from ..i2c import ZakharI2cDevice, bus
+from .common import *
 
 
 eye_i2c = ZakharI2cDevice(bus, EYE_ADDR)
 
 
-eye = Eye(bus, EYE_ADDR)
+
 eye_data = 0
 
 class Eye():
-    def __init__(self, i2c_bus: SMBus, address: int):
+    def __init__(self, i2c_bus, address: int):
         self.bus = i2c_bus
         self.addr = address
 
@@ -22,7 +23,7 @@ class Eye():
             pass
         return d
 
-
+eye = Eye(bus, EYE_ADDR)
 
 
 def eye_poll():
