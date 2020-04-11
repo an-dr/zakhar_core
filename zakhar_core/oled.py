@@ -10,26 +10,6 @@ import subprocess
 RST = 0
 disp = Adafruit_SSD1306.SSD1306_128_32(rst=RST)
 
-    # disp.setRotation(2)
-
-
-
-
-
-    # if disp.height == 64:
-    #    image = Image.open('img1.png').convert('1')
-    # else:
-    #    image = Image.open('img1.png').convert('1')
-
-    # disp.image(image)
-    # disp.display()
-    # time.sleep(2)
-
-    # if disp.height == 64:
-    #    image = Image.open('img3.jpg').convert('1')
-    # else:
-    #    image = Image.open('img3.jpg').convert('1')
-
 
 def oled_night():
     "This is for my GF, do not pay attention"
