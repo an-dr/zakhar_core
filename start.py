@@ -1,15 +1,22 @@
 from multiprocessing import Process
 from time import sleep
 from zakhar_core import *
+import click
+import atexit
+
 
 
 # -----------------------------------------------------------------------------
 if __name__ == "__main__":
+    atexit.register(zk_programs.zk_stop)
+    zk_programs.cli()
+    # while(1):
+        # pass
     # oled_init()
     # oled_night()
-    oled_license()
+    # devices.oled_license()
     # shiver()
-    reset()
+    # zk_programs.reset()
     # input("press enter to start")
 
     # i2c_write_bytes_to(EYE_ADDR, 0, [0]*8)
@@ -20,4 +27,4 @@ if __name__ == "__main__":
     # content = eye_i2c.read_bytes_from(0, 12)
     # print(content)
 
-    eye_poll2()
+    # eye_poll2()

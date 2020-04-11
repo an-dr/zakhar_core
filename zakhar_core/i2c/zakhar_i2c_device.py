@@ -1,4 +1,10 @@
 from .i2c import *
+from time import sleep
+
+REG_CMD = 0
+REG_MODE = 1
+CMD_NONE = 0xFF
+CMD_DONE = 0x00
 
 class ZakharI2cDevice:
     def __init__(self, i2c_bus: SMBus, addr: int):

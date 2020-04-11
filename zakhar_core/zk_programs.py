@@ -1,68 +1,78 @@
 from time import sleep
 import click
-from .devices import *
+from . import devices
 from .r_giskard import *
 from .zk_common import *
 
-@click.command()
+
+@click.group()
+def cli():
+    pass
+
+@cli.command()
 def random_walk():
     while(1):
-        motors.MoveForward()
+        devices.motors.MoveForward()
         sleep(1)
-        motors.MoveRight()
+        devices.motors.MoveRight()
         sleep(.2)
-        motors.MoveForward()
+        devices.motors.MoveForward()
         sleep(1)
-        motors.MoveRight()
+        devices.motors.MoveRight()
         sleep(.2)
-        motors.MoveForward()
+        devices.motors.MoveForward()
         sleep(1)
-        motors.MoveRight()
+        devices.motors.MoveRight()
         sleep(.2)
-        motors.MoveForward()
+        devices.motors.MoveForward()
         sleep(1)
-        motors.MoveRight()
+        devices.motors.MoveRight()
         sleep(.2)
-        motors.Stop()
+        devices.motors.Stop()
 
-@click.command()
+@cli.command()
 def demo():
-    motors.MoveRight()
+    devices.face.send_cmd(devices.CMD_FACE_CALM)
+    devices.motors.MoveRight()
     sleep(.4)
-    motors.Stop()
+    devices.motors.Stop()
     sleep(3)
-    motors.MoveRight()
+    devices.motors.MoveRight()
     sleep(.4)
-    motors.Stop()
+    devices.motors.Stop()
     sleep(3)
-    motors.MoveRight()
+    devices.motors.MoveRight()
     sleep(.4)
-    motors.Stop()
+    devices.motors.Stop()
     sleep(3)
-    motors.MoveRight()
+    devices.motors.MoveRight()
     sleep(.4)
-    motors.Stop()
+    devices.motors.Stop()
     sleep(3)
 
-@click.command()
+@cli.command()
 def freeze():
     while 1:
-        motors.Stop()
+        devices.motors.Stop()
         sleep(0.3)
 
-@click.command()
+@cli.command()
 def shiver():
     while 1:
-        motors.MoveLeft()
+        devices.motors.MoveLeft()
         sleep(0.05)
-        motors.MoveRight()
+        devices.motors.MoveRight()
         sleep(0.05)
 
-@click.command()
+@cli.command()
 def start_mind():
-    m = Mind(1, "Robot's Mind", shiver, eye_poll, freeze, trigger)
+    m = r_giskard.Mind(1, "Robot's Mind", shiver, eye_poll, freeze, trigger)
     m.start()
 
-@click.command()
+@cli.command()
 def reset():
-    motors.Stop()
+    devices.motors.Stop()
+
+def zk_stop():
+    devices.motors.Stop()
+    devices.face.send_cmd(devices.CMD_FACE_BLINK)
