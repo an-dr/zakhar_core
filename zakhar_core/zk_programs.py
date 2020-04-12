@@ -30,32 +30,32 @@ def random_walk():
         sleep(1)
         motors.dev.cmd(motors.CMD_RIGHT)
         sleep(.2)
-        motors.dev.Stop()
+        motors.dev.stop()
 
 @cli.command()
 def demo():
     face.dev.cmd(face.CMD_CALM)
     motors.dev.cmd(motors.CMD_RIGHT)
     sleep(.4)
-    motors.dev.Stop()
+    motors.dev.stop()
     sleep(3)
     motors.dev.cmd(motors.CMD_RIGHT)
     sleep(.4)
-    motors.dev.Stop()
+    motors.dev.stop()
     sleep(3)
     motors.dev.cmd(motors.CMD_RIGHT)
     sleep(.4)
-    motors.dev.Stop()
+    motors.dev.stop()
     sleep(3)
     motors.dev.cmd(motors.CMD_RIGHT)
     sleep(.4)
-    motors.dev.Stop()
+    motors.dev.stop()
     sleep(3)
 
 @cli.command()
 def freeze():
     while 1:
-        motors.dev.Stop()
+        motors.dev.stop()
         sleep(0.3)
 
 @cli.command()
