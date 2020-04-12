@@ -8,7 +8,8 @@
             "name": "Start.py",
             "type": "python",
             "request": "launch",
-            "program": "/zakhar_core/start.py",
+            "program": "start.py",
+            "args": ["test"],
             "console": "integratedTerminal"
         }
     ]

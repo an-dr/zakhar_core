@@ -1,68 +1,71 @@
 from time import sleep
 import click
-from . import devices
+from .devices import *
 from .r_giskard import *
 from .zk_common import *
 
 
 @click.group()
 def cli():
+    face.dev.cmd(face.CMD_CALM)
+    sleep(.5)
     pass
 
 @cli.command()
 def random_walk():
     while(1):
-        devices.motors.MoveForward()
+        motors.dev.cmd(motors.CMD_FORWARD)
         sleep(1)
-        devices.motors.MoveRight()
+        motors.dev.cmd(motors.CMD_RIGHT)
         sleep(.2)
-        devices.motors.MoveForward()
+        motors.dev.cmd(motors.CMD_FORWARD)
         sleep(1)
-        devices.motors.MoveRight()
+        motors.dev.cmd(motors.CMD_RIGHT)
         sleep(.2)
-        devices.motors.MoveForward()
+        motors.dev.cmd(motors.CMD_FORWARD)
         sleep(1)
-        devices.motors.MoveRight()
+        motors.dev.cmd(motors.CMD_RIGHT)
         sleep(.2)
-        devices.motors.MoveForward()
+        motors.dev.cmd(motors.CMD_FORWARD)
         sleep(1)
-        devices.motors.MoveRight()
+        motors.dev.cmd(motors.CMD_RIGHT)
         sleep(.2)
-        devices.motors.Stop()
+        motors.dev.Stop()
 
 @cli.command()
 def demo():
-    devices.face.send_cmd(devices.CMD_FACE_CALM)
-    devices.motors.MoveRight()
+    face.dev.cmd(face.CMD_CALM)
+    motors.dev.cmd(motors.CMD_RIGHT)
     sleep(.4)
-    devices.motors.Stop()
+    motors.dev.Stop()
     sleep(3)
-    devices.motors.MoveRight()
+    motors.dev.cmd(motors.CMD_RIGHT)
     sleep(.4)
-    devices.motors.Stop()
+    motors.dev.Stop()
     sleep(3)
-    devices.motors.MoveRight()
+    motors.dev.cmd(motors.CMD_RIGHT)
     sleep(.4)
-    devices.motors.Stop()
+    motors.dev.Stop()
     sleep(3)
-    devices.motors.MoveRight()
+    motors.dev.cmd(motors.CMD_RIGHT)
     sleep(.4)
-    devices.motors.Stop()
+    motors.dev.Stop()
     sleep(3)
 
 @cli.command()
 def freeze():
     while 1:
-        devices.motors.Stop()
+        motors.dev.Stop()
         sleep(0.3)
 
 @cli.command()
 def shiver():
+    face.dev.cmd(face.CMD_SAD)
     while 1:
-        devices.motors.MoveLeft()
-        sleep(0.05)
-        devices.motors.MoveRight()
-        sleep(0.05)
+        motors.dev.cmd(motors.CMD_LEFT)
+        sleep(0.005)
+        motors.dev.cmd(motors.CMD_RIGHT)
+        sleep(0.005)
 
 @cli.command()
 def start_mind():
@@ -71,8 +74,33 @@ def start_mind():
 
 @cli.command()
 def reset():
-    devices.motors.Stop()
+    motors.dev.cmd(CMD_STOP)
+
+
+@cli.command()
+def test():
+    from .i2c import ZakharI2cDevice, bus
+    dev = ZakharI2cDevice(bus, 0x2a)
+    dev.test_write_byte_to(0, 12)
+
+@cli.command()
+def stresstest():
+    face.dev.cmd(face.CMD_CALM)
+    face.dev.cmd(face.CMD_BLINK)
+    face.dev.cmd(face.CMD_CALM)
+    face.dev.cmd(face.CMD_SAD)
+    face.dev.cmd(face.CMD_ANGRY)
+    while 1:
+        motors.dev.cmd(motors.CMD_RIGHT)
+        motors.dev.cmd(motors.CMD_LEFT)
+
+
 
 def zk_stop():
-    devices.motors.Stop()
-    devices.face.send_cmd(devices.CMD_FACE_BLINK)
+    sleep(0.05)
+    motors.dev.cmd(motors.CMD_STOP)
+    sleep(0.05)
+    face.dev.cmd(face.CMD_CALM)
+    sleep(0.1)
+    face.dev.cmd(face.CMD_BLINK)
+

@@ -14,7 +14,7 @@ if __name__ == "__main__":
         # pass
     # oled_init()
     # oled_night()
-    # devices.oled_license()
+    # dev.oled_license()
     # shiver()
     # zk_programs.reset()
     # input("press enter to start")

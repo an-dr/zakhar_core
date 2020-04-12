@@ -1,10 +1,8 @@
 from ..i2c import ZakharI2cDevice, bus
 from .common import *
 
-
-eye_i2c = ZakharI2cDevice(bus, EYE_ADDR)
-
-
+ADDR_EYE = 0x2b
+dev = ZakharI2cDevice(bus, ADDR_EYE)
 
 eye_data = 0
 
@@ -23,7 +21,7 @@ class Eye():
             pass
         return d
 
-eye = Eye(bus, EYE_ADDR)
+eye = Eye(bus, ADDR_EYE)
 
 
 def eye_poll():
@@ -42,9 +40,9 @@ def eye_poll2():
     while(1):
         global eye_data
         global trigger
-        global eye_i2c
-        eye_data_hi = eye_i2c.read_byte_from(0)
-        eye_data_lo = eye_i2c.read_byte_from(1)
+        global dev_eye
+        eye_data_hi = dev_eye.read_byte_from(0)
+        eye_data_lo = dev_eye.read_byte_from(1)
         eye_data = eye_data_hi << 8 | eye_data_lo
         if eye_data is not 0:
             if (eye_data < EYE_TRIGGER):
