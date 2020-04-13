@@ -8,4 +8,4 @@ CMD_ANGRY = 0x32
 CMD_HAPPY = 0x33
 CMD_SAD = 0x34
 
-dev = ZakharI2cDevice(bus, ADDR_FACE)
+dev = ZakharI2cDevice("Face", bus, ADDR_FACE)

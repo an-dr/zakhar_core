@@ -1,53 +1,42 @@
 from ..i2c import ZakharI2cDevice, bus
 from .common import *
+from time import sleep
+import threading
+import collections
 
 ADDR_EYE = 0x2b
-dev = ZakharI2cDevice(bus, ADDR_EYE)
+REG_VAL_LO = 2
+REG_VAL_HI = 3
 
-eye_data = 0
+POLL_PERIOD = 0.05 # sec
+WINDOWS_SIZE_SEC = 2 # sec
 
-class Eye():
-    def __init__(self, i2c_bus, address: int):
-        self.bus = i2c_bus
-        self.addr = address
+WINDOW_SIZE_ELEMENTS = int(WINDOWS_SIZE_SEC / POLL_PERIOD)
 
-    def Read(self):
-        d = 0
-        try:
-            pass
-            # d = self.bus.read_word_data(self.addr,0)
-            # d = i2c_read_32bit(self.addr,0)
-        except OSError:
-            pass
-        return d
+eye_value = 0
 
-eye = Eye(bus, ADDR_EYE)
+mon_window = collections.deque( [0] * WINDOW_SIZE_ELEMENTS,
+                                maxlen=WINDOW_SIZE_ELEMENTS)
+
+dev = ZakharI2cDevice("Eye", bus, ADDR_EYE)
+
+
+def get_val():
+    lo = dev.read_byte_from(REG_VAL_LO)
+    hi = dev.read_byte_from(REG_VAL_HI)
+    return (hi << 8) | lo
 
 
 def eye_poll():
-    while(1):
-        global eye_data
-        global trigger
-        eye_data = eye.Read()
-        if (eye_data < EYE_TRIGGER):
-            trigger[0] = True
-        else:
-            trigger[0] = False
-        sleep(.1)
-        print(hex(eye_data)+ " | triggered = " + str(trigger[0]))
+    global eye_value
+    while True:
+        eye_value = get_val()
+        mon_window.append(eye_value)
+        # print("Light: " + str(list(mon_window)))
+        sleep(POLL_PERIOD)
 
-def eye_poll2():
-    while(1):
-        global eye_data
-        global trigger
-        global dev_eye
-        eye_data_hi = dev_eye.read_byte_from(0)
-        eye_data_lo = dev_eye.read_byte_from(1)
-        eye_data = eye_data_hi << 8 | eye_data_lo
-        if eye_data is not 0:
-            if (eye_data < EYE_TRIGGER):
-                trigger[0] = True
-            else:
-                trigger[0] = False
-            sleep(.1)
-            print(hex(eye_data)+ " | triggered = " + str(trigger[0]))
+
+def start_monitor_thread():
+    d = threading.Thread(name='daemon', target=eye_poll)
+    d.setDaemon(True)
+    d.start()

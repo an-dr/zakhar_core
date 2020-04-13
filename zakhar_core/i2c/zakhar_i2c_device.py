@@ -9,7 +9,8 @@ CMD_DONE = 0x00
 CMD_STOP = 0xA0
 
 class ZakharI2cDevice:
-    def __init__(self, i2c_bus: SMBus, addr: int):
+    def __init__(self, name: str, i2c_bus: SMBus, addr: int):
+        self.name = name
         self.bus = i2c_bus
         self.address = addr
 
@@ -30,7 +31,7 @@ class ZakharI2cDevice:
                 self.bus.write_byte_data(self.address, reg, val)
                 break
             except OSError:
-                print("Fault: %s" % str(OSError))
+                print("[%s] Fault (on write_byte_to): %s" % (self.name,str(OSError)))
 
     def test_write_byte_to(self, reg, val):
         self.try_to(5,OSError, self.bus.write_byte_data, reg, val)
@@ -72,7 +73,7 @@ class ZakharI2cDevice:
                 self.bus.write_byte(self.address, reg)
                 break
             except OSError:
-                print("Fault: %s" % str(OSError))
+                print("[%s] Fault (on read_byte_from): %s" % (self.name,str(OSError)))
         return self.bus.read_byte(self.address)
 
     def read_bytes_from(self, reg, num):

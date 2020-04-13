@@ -1,5 +1,6 @@
 from time import sleep
 import click
+import numpy as np
 from .devices import *
 from .r_giskard import *
 from .zk_common import *
@@ -85,17 +86,41 @@ def test():
 
 @cli.command()
 def stresstest():
-    face.dev.cmd(face.CMD_CALM)
-    face.dev.cmd(face.CMD_BLINK)
-    face.dev.cmd(face.CMD_CALM)
-    face.dev.cmd(face.CMD_SAD)
-    face.dev.cmd(face.CMD_ANGRY)
+    def faces_test():
+        face.dev.cmd(face.CMD_CALM)
+        face.dev.cmd(face.CMD_BLINK)
+        face.dev.cmd(face.CMD_CALM)
+        face.dev.cmd(face.CMD_SAD)
+        face.dev.cmd(face.CMD_ANGRY)
+
+    faces_test()
+    faces_test()
+    eye.start_monitor_thread()
     while 1:
         motors.dev.cmd(motors.CMD_RIGHT)
         motors.dev.cmd(motors.CMD_LEFT)
 
+@cli.command()
+def birdmon():
+    eye.start_monitor_thread()
+    pattern = ([0]*int(eye.WINDOW_SIZE_ELEMENTS/2-1)) + [1, 1,] + ([0]*int(eye.WINDOW_SIZE_ELEMENTS/2-1))
+    while True:
+        c = np.corrcoef(pattern, eye.mon_window)[1, 0]
+        if c >0.7:
+            print ("Corr: "+str(c))
+            face.dev.cmd(face.CMD_SAD)
+            motors.dev.cmd(motors.CMD_RIGHT)
+            motors.dev.cmd(motors.CMD_LEFT)
+            motors.dev.cmd(motors.CMD_RIGHT)
+            motors.dev.cmd(motors.CMD_LEFT)
+            motors.dev.cmd(motors.CMD_RIGHT)
+            motors.dev.cmd(motors.CMD_LEFT)
+            motors.dev.cmd(motors.CMD_STOP)
+            face.dev.cmd(face.CMD_CALM)
+        else:
+            sleep(eye.POLL_PERIOD)
 
-
+# ----------------------------------------------------------------------------
 def zk_stop():
     sleep(0.05)
     motors.dev.cmd(motors.CMD_STOP)
