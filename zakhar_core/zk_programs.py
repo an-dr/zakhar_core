@@ -77,13 +77,6 @@ def start_mind():
 def reset():
     motors.dev.cmd(CMD_STOP)
 
-
-@cli.command()
-def test():
-    from .i2c import ZakharI2cDevice, bus
-    dev = ZakharI2cDevice(bus, 0x2a)
-    dev.test_write_byte_to(0, 12)
-
 @cli.command()
 def stresstest():
     def faces_test():
