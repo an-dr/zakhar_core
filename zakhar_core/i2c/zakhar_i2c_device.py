@@ -63,6 +63,9 @@ class ZakharI2cDevice:
             cmd = self.read_byte_from(REG_CMD)
             sleep(0.01) # wait
 
+    def mode(self):
+        s = self.read_byte_from(REG_MODE)
+        return s
 
     def stop(self):
         self.cmd(0xA0)

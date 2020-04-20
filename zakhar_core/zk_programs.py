@@ -114,6 +114,9 @@ def birdmon():
             sleep(eye.POLL_PERIOD)
 
 # ----------------------------------------------------------------------------
+def zk_start():
+    face.dev.cmd(face.CMD_CALM)
+
 def zk_stop():
     sleep(0.05)
     motors.dev.cmd(motors.CMD_STOP)
