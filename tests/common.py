@@ -1,10 +1,11 @@
 import unittest
 import inspect
 import logging
+from time import sleep, time
 from zakhar_core import devices, __version__
 from zakhar_core import zk_programs
 
-STRESSTEST_CYCLES = 16
+STRESSTEST_CYCLES = 32
 
 
 def LOGD(message):

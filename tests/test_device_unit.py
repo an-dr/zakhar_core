@@ -34,13 +34,30 @@ class DeviceUnitTests(unittest.TestCase):
             val = c[1]
             LOGD("CMD: %s - %d" % (name,val))
             devices.face.dev.cmd(val)
-            m = devices.face.dev.mode()
-            LOGD("MODE: %d" % m)
-            assert(val == m)
+            now = time()
+            while 1:
+                if (time() > now + 3):
+                    assert(False)
+                else:
+                    m = devices.face.dev.mode()
+                    LOGD("MODE: %d" % m)
+                    if val == m:
+                        break
+                    LOGW("MODE: %s (expected: %s)" % (hex(m),hex(val)))
+                    sleep(.1) # need time to execute the command
 
     def test_face_faces_stress(self):
         for i in range(STRESSTEST_CYCLES):
             self.test_face_faces()
+
+    def test_eye_value(self):
+        v = devices.eye.dev.get_light()
+        print(str(v)+'|', end = '', flush=True)
+        assert(v < 0xffff)
+
+    def test_eye_stress(self):
+        for i in range(STRESSTEST_CYCLES*10):
+            self.test_eye_value()
 
     def test_test(self):
         LOGD("hello")

@@ -18,7 +18,18 @@ eye_value = 0
 mon_window = collections.deque( [0] * WINDOW_SIZE_ELEMENTS,
                                 maxlen=WINDOW_SIZE_ELEMENTS)
 
-dev = ZakharI2cDevice("Eye", bus, ADDR_EYE)
+class ZakharI2cDeviceEye(ZakharI2cDevice):
+    def __init__(self, name: str, i2c_bus, addr: int):
+        super().__init__(name,i2c_bus,addr)
+
+    def get_light(self):
+        lo = self.read_byte_from(REG_VAL_LO)
+        hi = self.read_byte_from(REG_VAL_HI)
+        return (hi << 8) | lo
+
+
+
+dev = ZakharI2cDeviceEye("Eye", bus, ADDR_EYE)
 
 
 def get_val():

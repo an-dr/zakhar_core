@@ -10,7 +10,7 @@
             "type": "python",
             "request": "launch",
             "program": "tests.py",
-            "args": ["DeviceUnitTests.test_motors_commands"],
+            "args": ["DeviceUnitTests.test_eye"],
             "console": "integratedTerminal"
         },
 
