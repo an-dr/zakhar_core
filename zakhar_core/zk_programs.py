@@ -2,8 +2,9 @@ from time import sleep
 import click
 import numpy as np
 from .devices import *
-from .r_giskard import *
+from . import r_giskard
 from .zk_common import *
+from . import lizard_mind
 
 
 @click.group()
@@ -13,7 +14,7 @@ def cli():
     pass
 
 @cli.command()
-def random_walk():
+def sqwalk():
     while(1):
         motors.dev.cmd(motors.CMD_FORWARD)
         sleep(1)
@@ -69,6 +70,17 @@ def shiver():
         sleep(0.005)
 
 @cli.command()
+def lizard():
+    m = r_giskard.Mind( 1, "Robot's Mind",
+                        lizard_mind.c_sqwalk,
+                        lizard_mind.u_eyepoll,
+                        lizard_mind.r_shiver,
+                        lizard_mind.lizard_trigger)
+    m.start()
+
+
+
+@cli.command()
 def start_mind():
     m = r_giskard.Mind(1, "Robot's Mind", shiver, eye_poll, freeze, trigger)
     m.start()
@@ -96,10 +108,10 @@ def stresstest():
 @cli.command()
 def birdmon():
     eye.start_monitor_thread()
-    pattern = ([0]*int(eye.WINDOW_SIZE_ELEMENTS/2-1)) + [1, 1,] + ([0]*int(eye.WINDOW_SIZE_ELEMENTS/2-1))
+    pattern = ([0]*int(eye.WINDOW_SIZE_ELEMENTS/2-3)) + [1, 1,1,1,1,1] + ([0]*int(eye.WINDOW_SIZE_ELEMENTS/2-3))
     while True:
         c = np.corrcoef(pattern, eye.mon_window)[1, 0]
-        if c >0.7:
+        if c >0.6:
             print ("Corr: "+str(c))
             face.dev.cmd(face.CMD_SAD)
             motors.dev.cmd(motors.CMD_RIGHT)
@@ -109,8 +121,11 @@ def birdmon():
             motors.dev.cmd(motors.CMD_RIGHT)
             motors.dev.cmd(motors.CMD_LEFT)
             motors.dev.cmd(motors.CMD_STOP)
+            motors.dev.cmd(motors.CMD_STOP)
             face.dev.cmd(face.CMD_CALM)
         else:
+            if c > 0.4:
+                print ("Corr: "+str(c))
             sleep(eye.POLL_PERIOD)
 
 # ----------------------------------------------------------------------------

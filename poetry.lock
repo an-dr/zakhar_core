@@ -248,19 +248,19 @@ version = "3.4"
 
 [[package]]
 category = "dev"
-description = ""
-name = "unittest"
-optional = false
-python-versions = "*"
-version = "0.0"
-
-[[package]]
-category = "dev"
 description = "Measures number of Terminal column cells of wide-character codes"
 name = "wcwidth"
 optional = false
 python-versions = "*"
 version = "0.1.9"
+
+[[package]]
+category = "dev"
+description = "A formatter for Python code."
+name = "yapf"
+optional = false
+python-versions = "*"
+version = "0.30.0"
 
 [[package]]
 category = "dev"
@@ -276,7 +276,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "8c0368996901fc7e10c14423052e81fd00b40172f408026e22aafec8ad72eeba"
+content-hash = "f6f5b62a88346e1b39759a17103b258b0607c1561561a3783de7f1e8342c9d3e"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -406,12 +406,13 @@ smbus2 = [
 spidev = [
     {file = "spidev-3.4.tar.gz", hash = "sha256:4314e52f573d95233c907f307558893313a8a606e197e77bb711526b0e179e80"},
 ]
-unittest = [
-    {file = "unittest2-0.0.0.tar.gz", hash = "sha256:1b492484bea7f68abda5fcc61412e77b6a105e5842355d630f8b75f01add3555"},
-]
 wcwidth = [
     {file = "wcwidth-0.1.9-py2.py3-none-any.whl", hash = "sha256:cafe2186b3c009a04067022ce1dcd79cb38d8d65ee4f4791b8888d6599d1bbe1"},
     {file = "wcwidth-0.1.9.tar.gz", hash = "sha256:ee73862862a156bf77ff92b09034fc4825dd3af9cf81bc5b360668d425f3c5f1"},
+]
+yapf = [
+    {file = "yapf-0.30.0-py2.py3-none-any.whl", hash = "sha256:3abf61ba67cf603069710d30acbc88cfe565d907e16ad81429ae90ce9651e0c9"},
+    {file = "yapf-0.30.0.tar.gz", hash = "sha256:3000abee4c28daebad55da6c85f3cd07b8062ce48e2e9943c8da1b9667d48427"},
 ]
 zipp = [
     {file = "zipp-3.1.0-py3-none-any.whl", hash = "sha256:aa36550ff0c0b7ef7fa639055d797116ee891440eac1a56f378e2d3179e0320b"},
