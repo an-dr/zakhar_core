@@ -134,9 +134,6 @@ def eyepoll():
 
 @cli.command()
 def birdmon():
-    # pattern = ([0] * int(eye.WINDOW_SIZE_ELEMENTS / 2 - 3)) + [
-    #     1, 1, 1, 1, 1, 1
-    # ] + ([0] * int(eye.WINDOW_SIZE_ELEMENTS / 2 - 3))
     pattern= [0,0,255,0,0]
     eye.dev.start_polling(freq = 40)
     eye.dev.start_corr_measurements(500, pattern, 0.7)

@@ -35,19 +35,14 @@ def s_none():
 
 def _u_birdmon():
     np.seterr(divide='ignore', invalid='ignore')
-    eye.start_monitor_thread()
-    pattern = ([0] * int(eye.WINDOW_SIZE_ELEMENTS / 2 - 3)) + [
-        1, 1, 1, 1, 1, 1
-    ] + ([0] * int(eye.WINDOW_SIZE_ELEMENTS / 2 - 3))
+    pattern= [0,0,255,0,0]
+    eye.dev.start_polling(freq = 40)
+    eye.dev.start_corr_measurements(500, pattern, 0.6)
     while True:
-        c = np.corrcoef(pattern, eye.mon_window)[1, 0]
-        if c > 0.6:
-            print("Corr: " + str(c))
+        if eye.dev.get_trig():
             lizard_trigger[0] = True
             sleep(3)
         else:
-            if c > 0.4:
-                print("Corr: " + str(c))
             lizard_trigger[0] = False
 
 def _u_dark():

@@ -21,7 +21,7 @@ class ZakharI2cDevice:
         while attempts:
             attempts -= 1
             try:
-                byte_ = self.bus.read_byte(self.address)
+                byte_ = i2c_read_byte(self.address)
                 return byte_
             except OSError:
                 print("[%s] Fault (on _read %d/%d)" % (self.name,(CONFIG_MAX_RETRY - attempts),CONFIG_MAX_RETRY))
@@ -32,7 +32,7 @@ class ZakharI2cDevice:
         while attempts:
             attempts -= 1
             try:
-                self.bus.write_byte(self.address, byte_)
+                i2c_write_byte(self.address, byte_)
                 return
             except OSError:
                 print("[%s] Fault (on _write %d/%d)" % (self.name,(CONFIG_MAX_RETRY - attempts),CONFIG_MAX_RETRY))
@@ -43,7 +43,7 @@ class ZakharI2cDevice:
         while attempts:
             attempts -= 1
             try:
-                self.bus.write_byte_data(self.address, reg_, byte_)
+                i2c_write_byte_data(self.address, reg_, byte_)
                 return
             except OSError:
                 print("[%s] Fault (on _write -> reg %d/%d)" % (self.name,(CONFIG_MAX_RETRY - attempts),CONFIG_MAX_RETRY))
@@ -61,7 +61,7 @@ class ZakharI2cDevice:
 
     def write_bytes_to(self, reg, vals):
         try:
-            self.bus.write_i2c_block_data(self.address, reg, vals)
+            i2c_write_i2c_block_data(self.address, reg, vals)
             return True
         except OSError:
             return False
