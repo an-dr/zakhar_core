@@ -19,7 +19,7 @@
             "type": "python",
             "request": "launch",
             "program": "start.py",
-            "args": ["test"],
+            "args": ["birdmon"],
             "console": "integratedTerminal"
         }
     ]

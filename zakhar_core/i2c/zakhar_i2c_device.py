@@ -85,13 +85,6 @@ class ZakharI2cDevice:
 
 
     def read_byte_from(self, reg):
-        # while True:
-        #     try:
-        #         self.bus.write_byte(self.address, reg)
-        #         break
-        #     except OSError:
-        #         print("[%s] Fault (on read_byte_from: write regn um): %s" % (self.name,str(OSError)))
-        # return self.bus.read_byte(self.address)
         self._write(reg)
         return self._read()
 

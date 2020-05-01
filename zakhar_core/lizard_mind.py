@@ -11,23 +11,12 @@ lizard_trigger = [False]
 def c_sqwalk():
     face.dev.cmd(face.CMD_CALM)
     while (1):
-        motors.dev.cmd(motors.CMD_FORWARD)
+        motors.dev.cmd(motors.CMD_LEFT)
+        print("CMD_LEFT")
         sleep(1)
         motors.dev.cmd(motors.CMD_RIGHT)
-        sleep(.2)
-        motors.dev.cmd(motors.CMD_FORWARD)
+        print("CMD_RIGHT")
         sleep(1)
-        motors.dev.cmd(motors.CMD_RIGHT)
-        sleep(.2)
-        motors.dev.cmd(motors.CMD_FORWARD)
-        sleep(1)
-        motors.dev.cmd(motors.CMD_RIGHT)
-        sleep(.2)
-        motors.dev.cmd(motors.CMD_FORWARD)
-        sleep(1)
-        motors.dev.cmd(motors.CMD_RIGHT)
-        sleep(.2)
-        motors.dev.stop()
 
 
 def r_shiver():
@@ -45,6 +34,7 @@ def s_none():
 
 
 def _u_birdmon():
+    np.seterr(divide='ignore', invalid='ignore')
     eye.start_monitor_thread()
     pattern = ([0] * int(eye.WINDOW_SIZE_ELEMENTS / 2 - 3)) + [
         1, 1, 1, 1, 1, 1
@@ -60,6 +50,8 @@ def _u_birdmon():
                 print("Corr: " + str(c))
             lizard_trigger[0] = False
 
+def _u_dark():
+    eye.start_monitor_thread()
 
 def u_eyepoll():
     _u_birdmon()
