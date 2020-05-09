@@ -6,6 +6,14 @@
     "configurations": [
 
         {
+            "name": "Start.py",
+            "type": "python",
+            "request": "launch",
+            "program": "start.py",
+            "args": ["liza3"],
+            "console": "integratedTerminal"
+        },
+        {
             "name": "tests.py",
             "type": "python",
             "request": "launch",
@@ -14,13 +22,5 @@
             "console": "integratedTerminal"
         },
 
-        {
-            "name": "Start.py",
-            "type": "python",
-            "request": "launch",
-            "program": "start.py",
-            "args": ["birdmon"],
-            "console": "integratedTerminal"
-        }
     ]
 }

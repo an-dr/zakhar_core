@@ -1,10 +1,18 @@
 from ..i2c import ZakharI2cDevice, bus
 from .common import *
 from time import sleep
+from ..logging import *
 import threading
 import collections
 import numpy as np
 from PIL import Image
+
+# CONFIG_LOG_LEVEL = logging.DEBUG
+CONFIG_LOG_LEVEL = logging.INFO
+
+CONFIG_PRINT_HALF_CORR = False
+CONFIG_PRINT_WINDOW = False
+CONFIG_PRINT_LIGHT = False
 
 ADDR_EYE = 0x2b
 REG_VAL_LO = 2
@@ -15,9 +23,11 @@ WINDOWS_SIZE_SEC = 0.6  # sec
 WINDOW_SIZE_ELEMENTS = int(WINDOWS_SIZE_SEC / POLL_PERIOD)
 eye_value = 0
 
+l = get_logger("Eye")
+
 class ZakharI2cDeviceEye(ZakharI2cDevice):
-    def __init__(self, name: str, i2c_bus, addr: int):
-        super().__init__(name, i2c_bus, addr)
+    def __init__(self, name: str, i2c_bus, addr: int, log_level):
+        super().__init__(name, i2c_bus, addr,log_level)
         self.light = 0
         self.polling = False
         self.poll_freq = 0
@@ -29,16 +39,22 @@ class ZakharI2cDeviceEye(ZakharI2cDevice):
     def _read_light(self):
         lo = self.read_byte_from(REG_VAL_LO)
         hi = self.read_byte_from(REG_VAL_HI)
-        return (hi << 8) | lo
+        val = (hi << 8) | lo
+        if CONFIG_PRINT_LIGHT:
+            l.info("Light : " + hex(val))
+        return val
 
     def __upd_light(self):
         self.light = self._read_light()
         if self.mon_window is not None:
-            self.mon_window.append(self.light)
+            if self.light != 0 and self.light != 0xffff: # if the value is wrong - don't count it
+                self.mon_window.append(self.light)
+            if CONFIG_PRINT_WINDOW:
+                l.info("h'" + list2strf(list(self.mon_window),5, in_hex=True))
 
     def _polling(self, freq: int):
         self.poll_freq = freq
-        print("[EYE] : Polling start")
+        l.info("Polling start")
         while 1:
             self.__upd_light()
             self.__calc_corrcoef()
@@ -46,11 +62,11 @@ class ZakharI2cDeviceEye(ZakharI2cDevice):
             if not self.polling:
                 break
         self.poll_freq = 0
-        print("[EYE] : Polling end")
+        l.info("Polling end")
 
     def _init_window(self, size_ms: int):
         win_el_num = int((size_ms/1000) * self.poll_freq)
-        print("[EYE] : Windows inited, size is %d" % win_el_num)
+        l.info("Windows inited, size is %d" % win_el_num)
         self.mon_window = collections.deque([0] * win_el_num,
                                             maxlen=win_el_num)
         return len(self.mon_window)
@@ -78,19 +94,28 @@ class ZakharI2cDeviceEye(ZakharI2cDevice):
         lmax = max(l)
         lmin = min(l)
         delta = lmax - lmin
+        if not delta:
+            return 0
         return delta / lmax
+
+    def round_list(self, l, num):
+        new_l = []
+        for i in l:
+            new_l.append(round(i, num))
+        return new_l
 
     def __calc_corrcoef(self):
         if self.corr_pattern is not None:
             if self.calc_max_deviation(self.mon_window) > 0.05:
                 self.corr_coef = np.corrcoef(self.corr_pattern, self.mon_window)[1, 0]
                 if self.corr_coef >= self.threshold:
-                    print("Triggered! Correlation: %f" % self.corr_coef)
-                    print(self.corr_pattern)
-                    print(list(self.mon_window))
-                    print(" --- ")
+                    l.info("Triggered! Correlation: %f" % self.corr_coef)
+                    l.info(self.round_list(self.corr_pattern,1))
+                    l.info(self.round_list(list(self.mon_window),1))
+                    l.info(" --- ")
                 elif self.corr_coef >= self.threshold / 2:
-                    print("Correlation: %f" % self.corr_coef)
+                    if CONFIG_PRINT_HALF_CORR:
+                        l.info("Correlation: %f" % self.corr_coef)
             else:
                 self.corr_coef = 0
 
@@ -107,13 +132,13 @@ class ZakharI2cDeviceEye(ZakharI2cDevice):
         p_norm = self.norm_minmax(p_resized)
         self.corr_pattern = p_norm
         self.threshold = threshold
-        print("[EYE] : pattern ")
-        print(self.corr_pattern)
+        l.info("pattern ")
+        l.info(self.round_list(self.corr_pattern,2))
 
     def get_corr_coef(self):
         return self.corr_coef
 
-    def get_trig(self):
+    def get_trig(self)->bool:
         if self.corr_coef >= self.threshold:
             return True
         else:
@@ -124,7 +149,7 @@ class ZakharI2cDeviceEye(ZakharI2cDevice):
 
     def start_polling(self, freq: int = 10):
         self.polling = True
-        d = threading.Thread(name='daemon', target=self._polling, args=[freq])
+        d = threading.Thread(name='[EYE]polling', target=self._polling, args=[freq])
         d.setDaemon(True)
         d.start()
 
@@ -132,7 +157,7 @@ class ZakharI2cDeviceEye(ZakharI2cDevice):
         self.polling = False
 
 
-dev = ZakharI2cDeviceEye("Eye", bus, ADDR_EYE)
+dev = ZakharI2cDeviceEye("Eye", bus, ADDR_EYE, CONFIG_LOG_LEVEL)
 
 
 

@@ -1,4 +1,5 @@
 from .i2c import *
+from ..logging import *
 from time import sleep
 
 REG_CMD = 0
@@ -10,9 +11,13 @@ CMD_STOP = 0xA0
 
 CONFIG_MAX_RETRY = 16
 
+CONFIG_DEFAULT_LOG_LEVEL = logging.DEBUG
+
 class ZakharI2cDevice:
-    def __init__(self, name: str, i2c_bus: SMBus, addr: int):
+    def __init__(self, name: str, i2c_bus: SMBus, addr: int, log_level=CONFIG_DEFAULT_LOG_LEVEL):
         self.name = name
+        self.l = get_logger("%s (i2c_dev)" % self.name)
+        self.l.setLevel(log_level)
         self.bus = i2c_bus
         self.address = addr
 
@@ -24,7 +29,7 @@ class ZakharI2cDevice:
                 byte_ = i2c_read_byte(self.address)
                 return byte_
             except OSError:
-                print("[%s] Fault (on _read %d/%d)" % (self.name,(CONFIG_MAX_RETRY - attempts),CONFIG_MAX_RETRY))
+                self.l.error("[%s] Fault (on _read %d/%d)" % (self.name,(CONFIG_MAX_RETRY - attempts),CONFIG_MAX_RETRY))
         raise error("After %d attempts" % CONFIG_MAX_RETRY)
 
     def _write(self, byte_):
@@ -35,7 +40,7 @@ class ZakharI2cDevice:
                 i2c_write_byte(self.address, byte_)
                 return
             except OSError:
-                print("[%s] Fault (on _write %d/%d)" % (self.name,(CONFIG_MAX_RETRY - attempts),CONFIG_MAX_RETRY))
+                self.l.error("[%s] Fault (on _write %d/%d)" % (self.name,(CONFIG_MAX_RETRY - attempts),CONFIG_MAX_RETRY))
         raise error("After %d attempts" % CONFIG_MAX_RETRY)
 
     def _write_to(self, reg_, byte_):
@@ -46,7 +51,7 @@ class ZakharI2cDevice:
                 i2c_write_byte_data(self.address, reg_, byte_)
                 return
             except OSError:
-                print("[%s] Fault (on _write -> reg %d/%d)" % (self.name,(CONFIG_MAX_RETRY - attempts),CONFIG_MAX_RETRY))
+                self.l.error("[%s] Fault (on _write -> reg %d/%d)" % (self.name,(CONFIG_MAX_RETRY - attempts),CONFIG_MAX_RETRY))
         raise error("After %d attempts" % CONFIG_MAX_RETRY)
 
     def write_byte_to(self, reg, val):
@@ -57,14 +62,6 @@ class ZakharI2cDevice:
         #     except OSError:
         #         print("[%s] Fault (on write_byte_to): %s" % (self.name,str(OSError)))f
         self._write_to(reg,val)
-
-
-    def write_bytes_to(self, reg, vals):
-        try:
-            i2c_write_i2c_block_data(self.address, reg, vals)
-            return True
-        except OSError:
-            return False
 
     def write_byte_and_verify(self, reg, val):
         attempts = CONFIG_MAX_RETRY
@@ -79,7 +76,7 @@ class ZakharI2cDevice:
                 # else:
                 #     return
             except (OSError,AssertionError):
-                print("[%s] Fault (on write_byte_and_verify reg %d/%d)" % (self.name,(CONFIG_MAX_RETRY - attempts),CONFIG_MAX_RETRY))
+                self.l.error("[%s] Fault (on write_byte_and_verify reg %d/%d)" % (self.name,(CONFIG_MAX_RETRY - attempts),CONFIG_MAX_RETRY))
         raise OSError("After %d attempts" % CONFIG_MAX_RETRY)
 
 
@@ -95,18 +92,19 @@ class ZakharI2cDevice:
         return vals
 
     def cmd(self, val):
-        result = False
+        # result = False
         # clear state
-        self.write_byte_to(REG_CMD, CMD_NONE)
+        # self.write_byte_to(REG_CMD, CMD_NONE)
         # if self.read_byte_from(REG_CMD) != CMD_NONE:
         #     raise error("Can't clear the CMD_REG")
         # write cmd
+        self.l.debug("Send a command :%s" % hex(val) )
         self.write_byte_to(REG_CMD,val)
         # wait until done
-        cmd = 0xFF
-        while ( cmd != CMD_DONE):
-            cmd = self.read_byte_from(REG_CMD)
-            sleep(0.01) # wait
+        # cmd = 0xFF
+        # while ( cmd != CMD_DONE):
+        #     cmd = self.read_byte_from(REG_CMD)
+        #     sleep(0.01) # wait
 
     def mode(self):
         s = self.read_byte_from(REG_MODE)

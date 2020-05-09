@@ -96,3 +96,6 @@ class SSD1306Device:
 
     def stop(self):
         self.disp.clear()
+
+
+dev = SSD1306Device()
